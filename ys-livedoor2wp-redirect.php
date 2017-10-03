@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:     YS livedoor2wp redirect
+ * Plugin Name:     YS Livedoor2WP Redirect
  * Description:     ライブドアブログ時代のURLを上手いことWordPress時代のURLにリダイレクトするプラグイン（暫定的に）
  * Author:          yosiakatsuki
  * Author URI:      https://yosiakatsuki.net/
@@ -10,7 +10,7 @@
  */
 
 /*
-	Copyright (c) 2016 Yoshiaki Ogata (https://yosiakatsuki.net/)
+	Copyright (c) 2017 Yoshiaki Ogata (https://yosiakatsuki.net/)
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License, version 2, as
 	published by the Free Software Foundation.
@@ -27,14 +27,14 @@ function l2wpr_redirect() {
   if( is_404() ){
 
 		$request_url = $_SERVER["REQUEST_URI"];
-		$url = home_url();
 
 		// パーマリンク設定に.htmlを入れるとライブドアブログ時代以外でも処理してしまう
 		if ( strpos( $request_url, '.html' ) !== FALSE){
 
-			$temp = substr( $request_url, strrpos($request_url, '/') + 1);
+			$temp = substr( $request_url, strrpos( $request_url, '/' ) + 1);
 			$temp = str_replace( '.html', '', $temp );
 			$post = get_page_by_path( $temp, OBJECT, 'post' );
+
 			if( $post ){
 				$post_id = $post->ID;
 				$redirect_url = get_permalink( $post_id );
@@ -74,7 +74,7 @@ add_action( 'admin_menu', 'l2wpr_admin_menu' );
 
 function l2wpr_options_page() {
 if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( __( 'You do not have sufficient permissions to access this page.', 'ys-simple-google-analytics' ) );
+		wp_die( 'あなたはこのページへアクセスする権限がありません！！！！' );
 	}
 	?>
 
@@ -84,11 +84,11 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 			<?php
 				$arg = array(
-								'meta_key'=>'l2wpr_redirect_last_time',
-								'meta_value'=>'1900/01/01 00:00:00',
-								'meta_compare'=>'>',
-								'order'=>'DESC',
-								'orderby'=>'meta_value'
+								'meta_key'     => 'l2wpr_redirect_last_time',
+								'meta_value'   => '1900/01/01 00:00:00',
+								'meta_compare' => '>',
+								'order'        => 'DESC',
+								'orderby'      => 'meta_value'
 							);
 				$posts = get_posts($arg);
 				if( $posts ): ?>

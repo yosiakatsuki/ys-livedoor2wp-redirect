@@ -22,44 +22,56 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-function l2wpr_redirect() {
+function l2wpr_template_redirect() {
 	// 404の時にライブドアブログの時のURLか判断してリダイレクトかける
   if( is_404() ){
 
 		$request_url = $_SERVER["REQUEST_URI"];
 
-		// パーマリンク設定に.htmlを入れるとライブドアブログ時代以外でも処理してしまう
-		if ( strpos( $request_url, '.html' ) !== FALSE){
+		// パーマリンク設定に.htmlを入れるとライブドアブログ時代以外でも処理してしまうので注意
+		if ( strpos( $request_url, '.html' ) !== FALSE ){
 
-			$temp = substr( $request_url, strrpos( $request_url, '/' ) + 1);
-			$temp = str_replace( '.html', '', $temp );
-			$post = get_page_by_path( $temp, OBJECT, 'post' );
+      for ($i=1; $i <=5 ; $i++) {
+  			$temp = substr( $request_url, strrpos( $request_url, '/' ) + 1);
+  			$temp = str_replace( '.html', '', $temp );
 
-			if( $post ){
-				$post_id = $post->ID;
-				$redirect_url = get_permalink( $post_id );
+        if( $i > 1 ){
+          $temp .= '-' . $i;
+        }
+  			$post = get_page_by_path( $temp, OBJECT, 'post' );
 
-				$key_hit = 'l2wpr_redirect_cnt';
-				$val_hit = get_post_meta( $post_id, $key_hit, true );
-				if( ! $val_hit || ! is_numeric( $val_hit ) ){
-					$val_hit = 0;
-				} else {
-					$val_hit = (int)$val_hit;
-				}
-				$val_hit ++;
-
-				update_post_meta( $post_id, $key_hit, $val_hit );
-				update_post_meta( $post_id, 'l2wpr_redirect_last_time', date_i18n( 'Y/m/d H:i:s' ) );
-
-				// リダイレクト
-				wp_safe_redirect( $redirect_url, 301 );
-				exit();
-			}
-
+  			if( $post ){
+          l2wpr_redirect( $post );
+  			}
+      }
 		}
   }
 }
-add_action( 'template_redirect', 'l2wpr_redirect' );
+add_action( 'template_redirect', 'l2wpr_template_redirect' );
+
+
+function l2wpr_redirect( $post ) {
+  $post_id = $post->ID;
+  $redirect_url = get_permalink( $post_id );
+
+  $key_hit = 'l2wpr_redirect_cnt';
+  $val_hit = get_post_meta( $post_id, $key_hit, true );
+  if( ! $val_hit || ! is_numeric( $val_hit ) ){
+    $val_hit = 0;
+  } else {
+    $val_hit = (int)$val_hit;
+  }
+  $val_hit ++;
+
+  update_post_meta( $post_id, $key_hit, $val_hit );
+  update_post_meta( $post_id, 'l2wpr_redirect_last_time', date_i18n( 'Y/m/d H:i:s' ) );
+
+  // リダイレクト
+  wp_safe_redirect( $redirect_url, 301 );
+  exit();
+}
+
+
 
 function l2wpr_admin_menu() {
 	add_options_page(

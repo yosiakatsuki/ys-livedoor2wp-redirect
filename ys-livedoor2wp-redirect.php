@@ -34,6 +34,13 @@ function l2wpr_template_redirect() {
       for ($i=1; $i <=5 ; $i++) {
   			$temp = substr( $request_url, strrpos( $request_url, '/' ) + 1);
   			$temp = str_replace( '.html', '', $temp );
+  			$temp = preg_replace( '/\?.*$/i', '', $temp );
+
+				//月別アーカイブ
+				if( 1 === preg_match( '/\d\d\d\d-\d\d/i', $temp ) ) {
+					l2wpr_redirect_date( $temp );
+				}
+
 
         if( $i > 1 ){
           $temp .= '-' . $i;
@@ -45,6 +52,10 @@ function l2wpr_template_redirect() {
   			}
       }
 		}
+    //RDF
+		if ( strpos( $request_url, 'index.rdf' ) !== FALSE ){
+      l2wpr_redirect_rss();
+    }
   }
 }
 add_action( 'template_redirect', 'l2wpr_template_redirect' );
@@ -68,6 +79,18 @@ function l2wpr_redirect( $post ) {
 
   // リダイレクト
   wp_safe_redirect( $redirect_url, 301 );
+  exit();
+}
+
+function l2wpr_redirect_rss() {
+
+  wp_safe_redirect( get_bloginfo('rss_url'), 301 );
+  exit();
+}
+
+function l2wpr_redirect_date( $temp ) {
+
+  wp_safe_redirect( home_url( '/' ) . str_replace( '-', '/', $temp ) , 301 );
   exit();
 }
 

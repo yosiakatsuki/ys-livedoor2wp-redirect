@@ -36,17 +36,21 @@ function ys_l2wpr_template_redirect() {
 		$livedoor_url_pattern = apply_filters( 'ys_l2wpr_livedoor_url_pattern', '.html' );
 		if ( strpos( $request_url, $livedoor_url_pattern ) !== false ) {
 			/**
-			 * 「-2」等が付いたURLも処理したいので3回くらい頑張る
+			 *  スラッグ判定
 			 */
 			$search_slug = ys_l2wpr_get_search_slug( $request_url );
+			/**
+			 * 月別アーカイブを検証
+			 */
+			if ( ys_l2wpr_redirect_date( $search_slug, $request_url ) ) {
+				return;
+			}
+			/**
+			 * URL検証
+             * 「-2」等が付いたURLも処理したいので3回くらい頑張る
+			 */
 			$retry_count = apply_filters( 'ys_l2wpr_retry_count', 3 );
 			for ( $i = 1; $i <= $retry_count; $i ++ ) {
-				/**
-				 * 月別アーカイブを検証
-				 */
-				if ( ys_l2wpr_redirect_date( $search_slug, $request_url ) ) {
-					return;
-				}
 				/**
 				 * 2回目以降は「-2」をつける
 				 */

@@ -165,7 +165,8 @@ function ys_l2wpr_redirect_date( $search_slug, $request_url ) {
 	 * 日付アーカイブの検証
 	 */
 	if ( 1 === preg_match( $month_archive_pattern, $search_slug ) ) {
-		wp_safe_redirect( home_url( '/' ) . str_replace( '-', '/', $search_slug ), 301 );
+	    $date_archive_path = apply_filters( 'ys_l2wpr_date_archive_path'. str_replace( '-', '/', $search_slug ), $search_slug, $request_url );
+		wp_safe_redirect( home_url( '/' ) . $date_archive_path, 301 );
 		exit();
 	}
 	return false;
